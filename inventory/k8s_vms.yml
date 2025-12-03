@@ -15,6 +15,7 @@ sources:
       - "vm.kubevirt.io/name=rhel9-emerald-ferret-31"
 
     compose:
+      inventory_hostname: "'rhel-9'"   # force host name to 'rhel-9'
       ansible_host: status.podIP    
       ansible_connection: ssh
       ansible_user: cloud-user 
