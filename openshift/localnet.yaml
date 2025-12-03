@@ -1,0 +1,32 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: ovs-br-ex-bridge
+spec:
+  desiredState:
+    ovn:
+      bridge-mappings:
+        - bridge: br-ex
+          localnet: machine-network
+          state: present
+  nodeSelector:
+    kubernetes.io/hostname: worker1.vzdemo.cfd160.dfw.ocp.run
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  annotations:
+    description: baremetal-network connection for VMs
+  name: machine-network
+  namespace: default
+spec:
+  config: |-
+    {
+      "cniVersion": "0.3.1", 
+      "name": "machine-network", 
+      "type": "ovn-k8s-cni-overlay", 
+      "topology": "localnet", 
+      "promiscMode": true,
+      "netAttachDefName": "default/machine-network",
+      "ipam": {}
+    }
