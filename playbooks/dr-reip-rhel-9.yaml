@@ -3,6 +3,7 @@
 - name: Discover RHEL VM pod and create dynamic host
   hosts: localhost
   gather_facts: false
+  become: false
 
   vars:
     vm_namespace: default
