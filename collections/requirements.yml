@@ -2,3 +2,5 @@
 collections:
   - name: redhat.rhel_system_roles
   - name: ansible.windows
+  - name: kubernetes.core
+
