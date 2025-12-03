@@ -1,0 +1,20 @@
+---
+plugin: kubernetes.core.k8s
+
+connections:
+  - host: "https://{{ lookup('env','KUBERNETES_SERVICE_HOST') }}:{{ lookup('env','KUBERNETES_SERVICE_PORT') }}"
+    api_key: "{{ lookup('file','/var/run/secrets/kubernetes.io/serviceaccount/token') }}"
+    ca_cert: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    verify_ssl: true
+
+sources:
+  - kind: Pod
+    namespaces:
+      - default
+    label_selectors:
+      - "vm.kubevirt.io/name=rhel9-emerald-ferret-31"
+
+    compose:
+      ansible_host: status.podIP    
+      ansible_connection: ssh
+      ansible_user: cloud-user 
