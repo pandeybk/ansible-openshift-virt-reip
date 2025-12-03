@@ -1,0 +1,7 @@
+---
+# Defaults for all Windows DR VMs
+
+dr_interface_alias: "Ethernet0"
+dr_dns:
+  - 8.8.8.8
+  - 1.1.1.1

@@ -1,0 +1,17 @@
+---
+all:
+  children:
+    linux_dr_vms:
+      hosts:
+        rhel-9:
+          ansible_host: 10.131.0.163
+          ansible_user: cloud-user
+    windows_dr_vms:
+      hosts:
+        win-2022:
+          ansible_host: 192.168.7.50
+          ansible_user: Administrator
+          ansible_password: "SuperSecretPassword"
+          ansible_connection: winrm
+          ansible_winrm_transport: ntlm
+          ansible_winrm_server_cert_validation: ignore

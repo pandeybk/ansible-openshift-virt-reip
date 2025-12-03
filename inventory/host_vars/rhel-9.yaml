@@ -1,0 +1,6 @@
+---
+dr_iface: eth1
+dr_ip: 192.168.7.217
+dr_prefix: 22           # /22 = 255.255.252.0
+dr_gateway: 192.168.4.1
+# dr_dns inherited from group_vars

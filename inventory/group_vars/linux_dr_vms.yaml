@@ -1,0 +1,7 @@
+---
+# Defaults for all Linux DR VMs
+
+dr_iface: eth1
+dr_dns:
+  - 8.8.8.8
+  - 1.1.1.1

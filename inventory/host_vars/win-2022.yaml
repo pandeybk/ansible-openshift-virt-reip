@@ -1,0 +1,6 @@
+---
+dr_interface_alias: "Ethernet0"
+dr_ip: 192.168.7.50
+dr_prefix: 22
+dr_gateway: 192.168.4.1
+# dr_dns inherited from group_vars
