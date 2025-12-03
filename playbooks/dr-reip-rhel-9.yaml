@@ -1,0 +1,78 @@
+---
+# Discover pod IP and build a dynamic host
+- name: Discover RHEL VM pod and create dynamic host
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    vm_namespace: default
+    vm_label: "vm.kubevirt.io/name=rhel9-emerald-ferret-31"
+    vm_inventory_name: "rhel-9"
+
+  tasks:
+    - name: Load Linux DR group vars
+      ansible.builtin.include_vars:
+        file: "../inventory/group_vars/linux_dr_vms.yaml"
+        name: linux_dr_group
+
+    - name: Load RHEL host-specific DR vars
+      ansible.builtin.include_vars:
+        file: "../inventory/host_vars/rhel-9.yaml"
+        name: rhel_dr_host
+
+    - name: Merge DR vars (group + host)
+      ansible.builtin.set_fact:
+        rhel_dr: "{{ linux_dr_group | combine(rhel_dr_host) }}"
+
+    - name: Get Pod for RHEL VM
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        namespace: "{{ vm_namespace }}"
+        label_selectors:
+          - "{{ vm_label }}"
+      register: rhel_vm_pod
+
+    - name: Fail if no pod found for RHEL VM
+      ansible.builtin.fail:
+        msg: "No pod found for VM with label {{ vm_label }} in namespace {{ vm_namespace }}"
+      when: rhel_vm_pod.resources | length == 0
+
+    - name: Set fact with RHEL VM pod IP
+      ansible.builtin.set_fact:
+        rhel_pod_ip: "{{ rhel_vm_pod.resources[0].status.podIP }}"
+
+    - name: Create dynamic host for RHEL VM
+      ansible.builtin.add_host:
+        name: "{{ vm_inventory_name }}"
+        ansible_host: "{{ rhel_pod_ip }}"
+        ansible_user: cloud-user
+        ansible_connection: ssh
+        # optional, avoids host key prompts in labs
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+        groups:
+          - linux_dr_vms
+        dr_iface: "{{ rhel_dr.dr_iface }}"
+        dr_ip: "{{ rhel_dr.dr_ip }}"
+        dr_prefix: "{{ rhel_dr.dr_prefix }}"
+        dr_gateway: "{{ rhel_dr.dr_gateway }}"
+        dr_dns: "{{ rhel_dr.dr_dns }}"
+
+- name: Re-IP RHEL DR VMs using Red Hat system role
+  hosts: linux_dr_vms
+  become: true
+  vars:
+    network_connections:
+      - name: "{{ dr_iface }}"
+        type: ethernet
+        interface_name: "{{ dr_iface }}"
+        state: up
+        ip:
+          dhcp4: no
+          auto6: no
+          address:
+            - "{{ dr_ip }}/{{ dr_prefix }}"
+          gateway4: "{{ dr_gateway | default(omit) }}"
+          dns: "{{ dr_dns | default([]) }}"
+  roles:
+    - redhat.rhel_system_roles.network
