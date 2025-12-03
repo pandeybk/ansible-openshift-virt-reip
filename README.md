@@ -165,7 +165,7 @@ Inside the VM, the interfaces look like:
 
 ---
 
-## 3. Dynamic Pod IP Lookup (Dynamic Inventory Without Plugin)
+## 3. Dynamic Pod IP Lookup using Ansible Playbook
 
 When VM restarts → pod recreated → pod IP changes.
 
