@@ -32,10 +32,6 @@
         namespace: "{{ vm_namespace }}"
         label_selectors:
           - "{{ vm_label }}"
-        host: "https://{{ lookup('env','KUBERNETES_SERVICE_HOST') }}:{{ lookup('env','KUBERNETES_SERVICE_PORT') }}"
-        api_key: "{{ lookup('file', '/var/run/secrets/kubernetes.io/serviceaccount/token') }}"
-        ca_cert: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-        verify_ssl: true
       register: rhel_vm_pod
 
     - name: Fail if no pod found for RHEL VM
