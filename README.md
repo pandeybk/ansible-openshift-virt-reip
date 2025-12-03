@@ -1,6 +1,6 @@
 ## Automated VM Re-IP on OpenShift Virtualization Using Multus + Ansible Automation Platform (AAP)
 
-In real-world **disaster recovery (DR)** scenarios, virtual machines restored in a new location or restarted during failover may **lose their network configuration**—especially the static IP assigned to their **machine network** interface (e.g., `eth1` via Multus). Without this IP, the VM becomes unreachable on the application network and requires remediation.
+In real-world **disaster recovery (DR)** scenarios, virtual machines restored in a new location or restarted during failover may **lose their network configuration**-especially the static IP assigned to their **machine network** interface (e.g., `eth1` via Multus). Without this IP, the VM becomes unreachable on the application network and requires remediation.
 
 During DR, we still need a reliable **management path** into the VM so we can repair the interface. In OpenShift Virtualization, the VM always receives a fresh **pod IP** on its primary (pod) network after reboot. This pod IP becomes a convenient transient management endpoint that Ansible can use to log in and restore the correct machine-network IP.
 
@@ -21,7 +21,7 @@ This project demonstrates how to fully automate this recovery process:
 
 The goal is to simulate DR for VMs in OpenShift Virtualization:
 
-* VM restarts → pod IP changes (We are using this as managment IP)
+* VM restarts -> pod IP changes (We are using this as managment IP)
 * Static network on Multus interface (`eth1`) needs to be reconfigured (fixing this is the main goal)
 * Ansible should automatically:
 
@@ -109,8 +109,8 @@ spec:
 
 Key details:
 
-* **`type: ovn-k8s-cni-overlay`** with **`topology: localnet`** → attaches to real node L2
-* `ipam: {}` → VM NIC gets no IP; VM config decides IP (good for DR)
+* **`type: ovn-k8s-cni-overlay`** with **`topology: localnet`** -> attaches to real node L2
+* `ipam: {}` -> VM NIC gets no IP; VM config decides IP (good for DR)
 * This interface will appear inside VM as **eth1**
 
 ---
@@ -119,8 +119,8 @@ Key details:
 
 This VM template attaches:
 
-* `eth0` → Pod network
-* `eth1` → Machine network (localnet)
+* `eth0` -> Pod network
+* `eth1` -> Machine network (localnet)
 
 ```yaml
 apiVersion: kubevirt.io/v1
@@ -160,14 +160,14 @@ spec:
 
 Inside the VM, the interfaces look like:
 
-* `eth0` → DHCP pod IP (changes every reboot)
-* `eth1` → No IP initially (we assign static IP via Ansible)
+* `eth0` -> DHCP pod IP (changes every reboot)
+* `eth1` -> No IP initially (we assign static IP via Ansible)
 
 ---
 
 ## 3. Dynamic Pod IP Lookup using Ansible Playbook
 
-When VM restarts → pod recreated → pod IP changes.
+When VM restarts -> pod recreated -> pod IP changes.
 
 Our playbook dynamically discovers the VM pod using:
 
@@ -196,7 +196,7 @@ To setup credentials Go To:
 Automation Executation -> Infrastructure -> Credentials -> Create Credential
 ```
 
-3.1.1 Create a **Kubernetes/OpenShift API Credential**:
+#### 3.1.1 Create a **Kubernetes/OpenShift API Credential**:
 
 * Host:
 
@@ -215,7 +215,7 @@ This credential gives playbook permission to run `k8s_info`.
 
 ![Kubernetes Credential Setup](./docs/images/openshift-app-credential.png)
 
-3.1.2 Create a **SSH Credentials**:
+#### 3.1.2 Create a **SSH Credentials**:
 
  * Name: `DR SSH Credential`
  * Credential Type: `Machine`
@@ -264,7 +264,7 @@ The playbook has 2 parts:
 
 ## 5. Setting Up AAP (Organization, Project, Job Template)
 
-## 5.1 Create Organization
+### 5.1 Create Organization
 
 Go to:
 
@@ -276,7 +276,7 @@ Name: `OpenShift DR Automation`
 
 ---
 
-## 5.2 Create Project from GitHub
+### 5.2 Create Project from GitHub
 
 Go to:
 ```
@@ -320,7 +320,7 @@ Automation Execution -> Templates -> Create Template
 
 ---
 
-## 6. Demo Part 1 — Validate VM Connectivity
+## 6. Demo Part 1 - Validate VM Connectivity
 
 ### Step 1: Open OpenShift Virtualization console
 
@@ -338,7 +338,7 @@ Expected: replies OK.
 
 ---
 
-## 7. Demo Part 2 — Break the Network (Simulated DR Event)
+## 7. Demo Part 2 - Break the Network (Simulated DR Event)
 
 Open Web Console -> Login
 
@@ -380,6 +380,6 @@ Re-run:
 ping 192.168.160.120
 ```
 
-Expected: ping restores immediately → VM is back on the machine network.
+Expected: ping restores immediately -> VM is back on the machine network.
 
 ![Ping Running After Ansible Job run](./docs/images/002-ping-working-after-ansible.png)
