@@ -1,15 +1,19 @@
 ## Automated VM Re-IP on OpenShift Virtualization Using Multus + Ansible Automation Platform (AAP)
 
-When workloads run inside **OpenShift Virtualization**, pod IPs change every time a VM restarts. If the VM uses an additional **machine-network** (via Multus), you may need to re-establish its static IP after a DR event.
+In real-world **disaster recovery (DR)** scenarios, virtual machines restored in a new location or restarted during failover may **lose their network configuration**—especially the static IP assigned to their **machine network** interface (e.g., `eth1` via Multus). Without this IP, the VM becomes unreachable on the application network and requires remediation.
 
-This project shows how to:
+During DR, we still need a reliable **management path** into the VM so we can repair the interface. In OpenShift Virtualization, the VM always receives a fresh **pod IP** on its primary (pod) network after reboot. This pod IP becomes a convenient transient management endpoint that Ansible can use to log in and restore the correct machine-network IP.
 
-* Attach VMs to a **real machine network** using **OVN LocalNet via Multus**
-* Dynamically discover VM **pod IPs** in OpenShift
-* Create an ephemeral **dynamic inventory** on the fly
-* Automatically re-IP the VM’s Multus interface (`eth1`)
-* Run it all via **Ansible Automation Platform**
-* Demonstrate a DR scenario end-to-end
+This project demonstrates how to fully automate this recovery process:
+
+* Attach VMs to a **true machine-network** using **OVN LocalNet + Multus**
+* Use the pod network only as a **temporary management plane** during DR
+* Dynamically discover the VM’s new **pod IP** after reboot
+* Build an on-the-fly **inventory entry** for Ansible
+* Automatically reassign the VM’s **static IP** on `eth1` (machine network)
+* Execute the entire workflow using **Ansible Automation Platform (AAP)**
+* Demonstrate the full DR -> loss of IP -> automated recovery lifecycle
+
 
 ---
 
