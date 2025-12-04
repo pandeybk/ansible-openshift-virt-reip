@@ -14,8 +14,18 @@ This project demonstrates how to fully automate this recovery process:
 * Execute the entire workflow using **Ansible Automation Platform (AAP)**
 * Demonstrate the full DR -> loss of IP -> automated recovery lifecycle
 
-
----
+## Two Different IPs in This Architecture**
+>
+> **🟡 Pod IP = Management Access (Transient)**
+>
+> * Always changes on reboot
+> * Used only so Ansible can reach the VM during DR recovery
+>
+> **🟢 Multus IP = Machine Network (Persistent)**
+>
+> * Must remain stable
+> * This is the VM’s “real” IP for workloads
+> * Assigned on `eth1` from the OpenShift Machine Network
 
 ## 1. What We Are Trying To Achieve
 
